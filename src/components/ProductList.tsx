@@ -16,19 +16,20 @@ import {ProductItemDescription} from './ProductItemDescription';
 interface ProductListProps {
   list: IProductItem[];
   onProductSelect: () => void;
+  onRefresh: () => Promise<void>;
 }
 
-const wait = (timeout: number) => {
-  return new Promise((resolve: any) => setTimeout(resolve, timeout));
-};
-
-export const ProductList: FC<ProductListProps> = ({list, onProductSelect}) => {
+export const ProductList: FC<ProductListProps> = ({
+  list,
+  onProductSelect,
+  onRefresh,
+}) => {
   const [refreshing, setRefreshing] = useState(false);
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
-    wait(2000).then(() => setRefreshing(false));
-  }, []);
+    onRefresh().then(() => setRefreshing(false));
+  }, [onRefresh]);
 
   const renderItem = (item: IProductItem) => (
     <View style={styles.cardContainer}>

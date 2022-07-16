@@ -12,13 +12,21 @@ const App = () => {
   const [mode, setMode] = useState('list');
   const [data, setData] = useState<IProductItem[]>([]);
 
+  const getData = async () => {
+    try {
+      const {
+        data: {data: newData},
+      } = await axios.get(
+        'https://demo.spreecommerce.org/api/v2/storefront/products',
+      );
+      setData(newData);
+    } catch {}
+  };
+
   useEffect(() => {
-    axios
-      .get('https://demo.spreecommerce.org/api/v2/storefront/products')
-      .then(({data: {data: newData}}) => {
-        setData(newData);
-      });
+    getData();
   }, []);
+
   const handleProductSelect = () => {
     setMode('item');
   };
@@ -31,7 +39,11 @@ const App = () => {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar />
       {mode === 'list' && (
-        <ProductList list={data} onProductSelect={handleProductSelect} />
+        <ProductList
+          onRefresh={getData}
+          list={data}
+          onProductSelect={handleProductSelect}
+        />
       )}
       {mode === 'item' && (
         <ProductItem item={data[0]} onProductClose={handleProductClose} />
